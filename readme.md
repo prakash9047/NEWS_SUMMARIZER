@@ -53,4 +53,21 @@ my-news-project/
     │   │   └── api.js
     │   └── ...
     └── ...
-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
+
+add below to .env
+
+
+///NEWS_API_KEY=0b5f071b215c40ea89ad29de35a48604
+GROQ_API_KEY=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
+# JWT Settings
+SECRET_KEY=Mlhld8E3RnHMx8YwCxCF6gTBYWYtLw8nRv2wrN2vgNz-kQOcs-2OaeigBwWrURui2Mk2cspnEzoUk9rchtd-aQ
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Database Settings
+DATABASE_URL=sqlite:///./sql_app.db
+
+
+
+
+# 7bfd907035594a30b6f8eab35ad4c68d
