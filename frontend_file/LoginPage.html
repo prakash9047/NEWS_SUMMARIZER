@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login - News Summarizer</title>
+  <link rel="stylesheet" href="LoginPage.css"/>
+</head>
+<body>
+  <div class="login-container">
+    <h2>Welcome Back</h2>
+    <p>Sign in to continue your personalized news experience.</p>
+    <form id="login-form">
+      <input id="email" type="email" placeholder="Email" required/>
+      <input id="password" type="password" placeholder="Password" required/>
+      <div class="button-container">
+        <button type="submit">Login</button>
+      </div>
+    </form>
+    <p>Don't have an account? <a href="RegisterPage.html">Sign up</a></p>
+  </div>
+
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async e => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        const params = new URLSearchParams();
+        params.append('username', email);
+        params.append('password', password);
+
+        const res = await fetch('http://localhost:8000/auth/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params
+        });
+        const data = await res.json();
+        if (!res.ok) throw data;
+        // save token
+        localStorage.setItem('token', data.access_token);
+        window.location.href = 'HomePage.html';
+      } catch (err) {
+        console.error(err);
+        alert('Login failed');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>News Summarizer</title>
+  <link rel="stylesheet" href="HomePage.css"/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>SpeedRead</h1>
+      <h6><p>We deliver the news that matters, in moments that count!!</p></h6>
+      <nav>
+        <a href="CategoryPage.html" class="nav-link">Go to Categories</a>
+      </nav>
+      <nav>
+        <a href="LoginPage.html" class="nav-link top-right">Login</a>
+      </nav>
+    </header>
+
+    <div class="search-bar">
+      <input id="text-input" type="text" placeholder="Paste text here to summarize…" />
+      <button id="summarize-btn">Summarize</button>
+    </div>
+
+    <div id="news-grid" class="news-grid">
+      <!-- Latest news will be injected here -->
+    </div>
+  </div>
+
+  <script>
+    const btn = document.getElementById('summarize-btn');
+    const input = document.getElementById('text-input');
+    const grid = document.getElementById('news-grid');
+
+    // Fetch and display the latest news
+    async function loadLatestNews() {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/news/latest');
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const latestNews = await res.json();
+        grid.innerHTML = ''; // Clear existing content
+        latestNews.forEach(news => {
+          const card = document.createElement('div');
+          card.className = 'news-card';
+          card.innerHTML = `
+            <h2>${news.title}</h2>
+            <p>${news.description}</p>
+            <div class="news-actions">
+              <button onclick="summarizeNews('${news.description}')" class="action-btn">Summarize</button>
+              <button onclick="translateNews('${news.description}')" class="action-btn">Translate</button>
+              <a href="${news.url}" target="_blank" class="read-more">Read more</a>
+            </div>
+            <div class="news-meta">
+              <span class="source">Source: ${news.source}</span>
+              <span class="date">${new Date(news.published_at).toLocaleDateString()}</span>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (e) {
+        console.error('Error loading latest news:', e);
+        grid.innerHTML = '<p class="error">Failed to load latest news. Please try again later.</p>';
+      }
+    }
+
+    // Summarize news text
+    async function summarizeNews(text) {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/summarize/text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const { summary, headline } = await res.json();
+        
+        const summaryCard = document.createElement('div');
+        summaryCard.className = 'news-card summary-card';
+        summaryCard.innerHTML = `
+          <h2>${headline}</h2>
+          <p>${summary}</p>
+          <button onclick="this.parentElement.remove()" class="close-btn">Close</button>
+        `;
+        grid.prepend(summaryCard);
+      } catch (e) {
+        console.error('Error summarizing news:', e);
+        alert('Failed to summarize news. Please try again.');
+      }
+    }
+
+    // Translate news text
+    async function translateNews(text) {
+      // TODO: Implement translation functionality
+      alert('Translation feature coming soon!');
+    }
+
+    // Handle text summarization
+    btn.addEventListener('click', async () => {
+      const text = input.value.trim();
+      if (!text) return alert('Please paste some text to summarize.');
+
+      btn.disabled = true;
+      btn.textContent = 'Summarizing…';
+
+      try {
+        const res = await fetch('http://127.0.0.1:8000/summarize/text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const { summary, headline } = await res.json();
+
+        const card = document.createElement('div');
+        card.className = 'news-card summary-card';
+        card.innerHTML = `
+          <h2>${headline}</h2>
+          <p>${summary}</p>
+          <button onclick="this.parentElement.remove()" class="close-btn">Close</button>
+        `;
+        grid.prepend(card);
+      } catch (e) {
+        console.error(e);
+        alert('Failed to summarize. Check console.');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Summarize';
+      }
+    });
+
+    // Call the function to load the latest news
+    loadLatestNews();
+  </script>
+</body>
+</html>

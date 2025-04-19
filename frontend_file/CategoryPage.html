@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>News Categories</title>
+  <link rel="stylesheet" href="CategoryPage.css"/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>News Categories</h1>
+      <p>Browse different categories of news summaries.</p>
+      <nav><a href="HomePage.html" class="nav-link">Back to Home</a></nav>
+    </header>
+
+    <div class="categories-grid" id="categories-grid">
+      <!-- Categories will be populated by JavaScript -->
+    </div>
+
+    <div id="category-news" class="category-news" style="display: none;">
+      <h2 id="category-title"></h2>
+      <div id="news-grid" class="news-grid">
+        <!-- News articles will be populated here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const categories = [
+      { id: 'business', name: 'Business', description: 'Market trends, financial news, and industry updates.' },
+      { id: 'entertainment', name: 'Entertainment', description: 'Movies, TV shows, celebrity news, and pop culture.' },
+      { id: 'health', name: 'Health', description: 'Medical advancements, wellness tips, and healthcare news.' },
+      { id: 'science', name: 'Science', description: 'Scientific discoveries and research breakthroughs.' },
+      { id: 'sports', name: 'Sports', description: 'Scores, updates, and highlights from the world of sports.' },
+      { id: 'technology', name: 'Technology', description: 'Innovations, gadgets, and tech industry news.' }
+    ];
+
+    const categoriesGrid = document.getElementById('categories-grid');
+    const categoryNews = document.getElementById('category-news');
+    const categoryTitle = document.getElementById('category-title');
+    const newsGrid = document.getElementById('news-grid');
+
+    // Populate categories
+    categories.forEach(category => {
+      const card = document.createElement('div');
+      card.className = 'category-card';
+      card.innerHTML = `
+        <h2>${category.name}</h2>
+        <p>${category.description}</p>
+        <button onclick="loadCategoryNews('${category.id}')" class="category-link">View News</button>
+      `;
+      categoriesGrid.appendChild(card);
+    });
+
+    // Load news for a specific category
+    async function loadCategoryNews(category) {
+      try {
+        const res = await fetch(`http://127.0.0.1:8000/news/category/${category}`);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const news = await res.json();
+        
+        // Update UI
+        const categoryName = categories.find(c => c.id === category).name;
+        categoryTitle.textContent = `${categoryName} News`;
+        newsGrid.innerHTML = '';
+        
+        news.forEach(article => {
+          const card = document.createElement('div');
+          card.className = 'news-card';
+          card.innerHTML = `
+            <h3>${article.title}</h3>
+            <p>${article.description}</p>
+            <div class="news-actions">
+              <button onclick="summarizeNews('${article.description}')" class="action-btn">Summarize</button>
+              <button onclick="translateNews('${article.description}')" class="action-btn">Translate</button>
+              <a href="${article.url}" target="_blank" class="read-more">Read more</a>
+            </div>
+            <div class="news-meta">
+              <span class="source">Source: ${article.source}</span>
+              <span class="date">${new Date(article.published_at).toLocaleDateString()}</span>
+            </div>
+          `;
+          newsGrid.appendChild(card);
+        });
+
+        // Show news section and hide categories
+        categoriesGrid.style.display = 'none';
+        categoryNews.style.display = 'block';
+      } catch (e) {
+        console.error('Error loading category news:', e);
+        newsGrid.innerHTML = '<p class="error">Failed to load news. Please try again later.</p>';
+      }
+    }
+
+    // Summarize news text
+    async function summarizeNews(text) {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/summarize/text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text })
+        });
+        const { summary, headline } = await res.json();
+        
+        const summaryCard = document.createElement('div');
+        summaryCard.className = 'news-card summary-card';
+        summaryCard.innerHTML = `
+          <h2>${headline}</h2>
+          <p>${summary}</p>
+          <button onclick="this.parentElement.remove()" class="close-btn">Close</button>
+        `;
+        newsGrid.prepend(summaryCard);
+      } catch (e) {
+        console.error('Error summarizing news:', e);
+        alert('Failed to summarize news. Please try again.');
+      }
+    }
+
+    // Translate news text
+    async function translateNews(text) {
+      // TODO: Implement translation functionality
+      alert('Translation feature coming soon!');
+    }
+
+    // Add back button functionality
+    document.querySelector('.nav-link').addEventListener('click', () => {
+      categoriesGrid.style.display = 'grid';
+      categoryNews.style.display = 'none';
+    });
+  </script>
+</body>
+</html>

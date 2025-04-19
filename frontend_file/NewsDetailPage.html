@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>News Summary - Detailed View</title>
+  <link rel="stylesheet" href="NewsDetailPage.css"/>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>News Summary</h1>
+      <p>Get a detailed breakdown of selected news.</p>
+      <nav>
+        <a href="CategoryPage.html" class="nav-link">Back to Categories</a>
+        <a href="HomePage.html" class="nav-link">Home</a>
+      </nav>
+    </header>
+
+    <section class="news-detail">
+      <div id="news-content">
+        <!-- News content will be populated here -->
+      </div>
+
+      <div class="news-actions">
+        <button id="summarize-btn" class="action-btn">Summarize</button>
+        <button id="translate-btn" class="action-btn">Translate</button>
+      </div>
+
+      <div id="summary-container" class="summary-container" style="display: none;">
+        <h2>Summary</h2>
+        <div id="summary-content"></div>
+        <button onclick="document.getElementById('summary-container').style.display = 'none'" class="close-btn">Close</button>
+      </div>
+
+      <div id="translation-container" class="translation-container" style="display: none;">
+        <h2>Translation</h2>
+        <div id="translation-content"></div>
+        <button onclick="document.getElementById('translation-container').style.display = 'none'" class="close-btn">Close</button>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    // Get news data from session storage
+    const newsData = JSON.parse(sessionStorage.getItem('newsData'));
+    const newsContent = document.getElementById('news-content');
+    const summarizeBtn = document.getElementById('summarize-btn');
+    const translateBtn = document.getElementById('translate-btn');
+
+    // Display news content
+    if (newsData) {
+      newsContent.innerHTML = `
+        <h2 id="news-title">${newsData.title}</h2>
+        <p class="date">Published on ${new Date(newsData.published_at).toLocaleDateString()}</p>
+        <div class="summary-content">
+          <p>${newsData.description}</p>
+          <a href="${newsData.url}" target="_blank" class="read-more">Read full article</a>
+        </div>
+        <div class="news-meta">
+          <span class="source">Source: ${newsData.source}</span>
+        </div>
+      `;
+    } else {
+      newsContent.innerHTML = '<p class="error">No news data available. Please go back and select a news article.</p>';
+    }
+
+    // Handle summarization
+    summarizeBtn.addEventListener('click', async () => {
+      try {
+        const res = await fetch('http://127.0.0.1:8000/summarize/text', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: newsData.description })
+        });
+        const { summary, headline } = await res.json();
+        
+        document.getElementById('summary-content').innerHTML = `
+          <h3>${headline}</h3>
+          <p>${summary}</p>
+        `;
+        document.getElementById('summary-container').style.display = 'block';
+      } catch (e) {
+        console.error('Error summarizing news:', e);
+        alert('Failed to summarize news. Please try again.');
+      }
+    });
+
+    // Handle translation
+    translateBtn.addEventListener('click', async () => {
+      // TODO: Implement translation functionality
+      alert('Translation feature coming soon!');
+    });
+  </script>
+</body>
+</html>
