@@ -1,58 +1,120 @@
-my-news-project/
+# News Aggregator with AI Features
+
+A modern news aggregator application that provides real-time news articles with AI-powered features including summarization, translation, and text-to-speech capabilities.
+
+## Features
+
+- 📰 Real-time news articles from various categories
+- 🤖 AI-powered text summarization
+- 🌐 Multi-language translation support
+- 🔊 Text-to-speech functionality
+- 🎯 Personalized news recommendations
+- 📱 Responsive design for all devices
+
+- ![image](https://github.com/user-attachments/assets/30605a52-cb91-454d-8c17-0890eb6700ad)
+
+
+## Tech Stack
+
+### Frontend
+- HTML5, CSS3, JavaScript
+- Modern UI with responsive design
+- Interactive user interface
+
+### Backend
+- Python with FastAPI
+- SQLAlchemy for database management
+- News API for news aggregation
+- Groq API for AI features (summarization and translation)
+- gTTS for text-to-speech functionality
+
+## Prerequisites
+
+- Python 3.8+
+- Node.js (for development)
+- News API key
+- Groq API key
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/news-aggregator.git
+cd news-aggregator
+```
+
+2. Create a virtual environment and activate it:
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+3. Install Python dependencies:
+```bash
+pip install -r requirements.txt
+```
+
+4. Create a `.env` file in the root directory with your API keys:
+```env
+NEWS_API_KEY=your_news_api_key
+GROQ_API_KEY=your_groq_api_key
+```
+
+5. Initialize the database:
+```bash
+python backend/init_db.py
+```
+
+## Running the Application
+
+1. Start the backend server:
+```bash
+uvicorn backend.main:app --reload
+```
+
+2. Open your browser and navigate to:
+```
+http://localhost:8000
+```
+
+## API Endpoints
+
+- `GET /api/news/latest` - Get latest news articles
+- `GET /api/news/category/{category}` - Get news by category
+- `GET /api/news/recommended/{user_id}` - Get personalized news recommendations
+- `POST /api/news/interaction` - Record user interactions
+- `POST /api/summarize/text` - Summarize text
+- `POST /api/news/text-to-speech` - Convert text to speech
+
+## Project Structure
+
+```
+news-aggregator/
 ├── backend/
-│   ├── manage.py
-│   ├── requirements.txt
-│   ├── README.md
-│   ├── crontab
-│   ├── config/
-│   │   ├── __init__.py
-│   │   ├── asgi.py
-│   │   ├── settings.py
-│   │   ├── urls.py
-│   │   └── wsgi.py
-│   ├── news_app/
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── migrations/
-│   │   │   └── __init__.py
-│   │   ├── models.py
-│   │   ├── serializers.py
-│   │   ├── tests.py
-│   │   ├── urls.py
-│   │   ├── utils/
-│   │   │   ├── news_fetcher.py
-│   │   │   ├── summarizer.py
-│   │   │   └── translator.py
-│   │   ├── views.py
-│   │   └── services/
-│   │       └── recommendation.py
-│   └── ...
-└── frontend/
-    ├── index.html
-    ├── package.json
-    ├── vite.config.js
-    ├── src/
-    │   ├── main.jsx
-    │   ├── App.jsx
-    │   ├── App.css
-    │   ├── components/
-    │   │   ├── Header.jsx
-    │   │   ├── Footer.jsx
-    │   │   ├── NewsCard.jsx
-    │   │   ├── SearchBar.jsx
-    │   │   └── ...
-    │   ├── pages/
-    │   │   ├── HomePage.jsx
-    │   │   ├── NewsDetailPage.jsx
-    │   │   ├── CategoryPage.jsx
-    │   │   ├── LoginPage.jsx
-    │   │   ├── RegisterPage.jsx
-    │   │   └── ...
-    │   ├── services/
-    │   │   └── api.js
-    │   └── ...
-    └── ...
+│   ├── main.py
+│   ├── routes/
+│   │   ├── news.py
+│   │   └── summarization.py
+│   ├── models.py
+│   ├── schemas.py
+│   └── database.py
+├── frontend_file/
+│   ├── static/
+│   │   ├── css/
+│   │   └── js/
+│   └── index.html
+├── requirements.txt
+└── README.md
+```
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
 
 add below to .env
 
