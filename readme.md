@@ -1,6 +1,6 @@
-# News Aggregator with AI Features
+# News Summarizer with AI Features
 
-A modern news aggregator application that provides real-time news articles with AI-powered features including summarization, translation, and text-to-speech capabilities.
+A modern news summarizer application that provides real-time news articles with AI-powered features including summarization, translation, and text-to-speech capabilities.
 
 ## Features
 
@@ -39,8 +39,8 @@ A modern news aggregator application that provides real-time news articles with 
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/news-aggregator.git
-cd news-aggregator
+git clone https://github.com/yourusername/news-summarizer.git
+cd news-summarizer
 ```
 
 2. Create a virtual environment and activate it:
