@@ -34,29 +34,32 @@
     const input = document.getElementById('text-input');
     const grid = document.getElementById('news-grid');
 
+    // Base URL for API endpoints (relative to current origin)
+    const API_BASE = window.location.origin;
+
     // Fetch and display the latest news
     async function loadLatestNews() {
       try {
-        const res = await fetch('http://127.0.0.1:8000/news/latest');
+        const res = await fetch(`${API_BASE}/api/news/latest`);
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
         }
         const latestNews = await res.json();
         grid.innerHTML = ''; // Clear existing content
-        latestNews.forEach(news => {
+        latestNews.forEach(article => {
           const card = document.createElement('div');
           card.className = 'news-card';
           card.innerHTML = `
-            <h2>${news.title}</h2>
-            <p>${news.description}</p>
+            <h2>${article.title}</h2>
+            <p>${article.description}</p>
             <div class="news-actions">
-              <button onclick="summarizeNews('${news.description}')" class="action-btn">Summarize</button>
-              <button onclick="translateNews('${news.description}')" class="action-btn">Translate</button>
-              <a href="${news.url}" target="_blank" class="read-more">Read more</a>
+              <button onclick="summarizeNews('${article.description}')" class="action-btn">Summarize</button>
+              <button onclick="translateNews('${article.description}')" class="action-btn">Translate</button>
+              <a href="${article.url}" target="_blank" class="read-more">Read more</a>
             </div>
             <div class="news-meta">
-              <span class="source">Source: ${news.source}</span>
-              <span class="date">${new Date(news.published_at).toLocaleDateString()}</span>
+              <span class="source">Source: ${article.source}</span>
+              <span class="date">${new Date(article.published_at).toLocaleDateString()}</span>
             </div>
           `;
           grid.appendChild(card);
@@ -70,13 +73,13 @@
     // Summarize news text
     async function summarizeNews(text) {
       try {
-        const res = await fetch('http://127.0.0.1:8000/summarize/text', {
+        const res = await fetch(`${API_BASE}/api/summarize/text`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text })
         });
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const { summary, headline } = await res.json();
-        
         const summaryCard = document.createElement('div');
         summaryCard.className = 'news-card summary-card';
         summaryCard.innerHTML = `
@@ -91,13 +94,12 @@
       }
     }
 
-    // Translate news text
-    async function translateNews(text) {
-      // TODO: Implement translation functionality
+    // Translate news text (coming soon)
+    function translateNews(text) {
       alert('Translation feature coming soon!');
     }
 
-    // Handle text summarization
+    // Handle manual text summarization
     btn.addEventListener('click', async () => {
       const text = input.value.trim();
       if (!text) return alert('Please paste some text to summarize.');
@@ -106,13 +108,13 @@
       btn.textContent = 'Summarizing…';
 
       try {
-        const res = await fetch('http://127.0.0.1:8000/summarize/text', {
+        const res = await fetch(`${API_BASE}/api/summarize/text`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text })
         });
+        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
         const { summary, headline } = await res.json();
-
         const card = document.createElement('div');
         card.className = 'news-card summary-card';
         card.innerHTML = `
@@ -122,15 +124,15 @@
         `;
         grid.prepend(card);
       } catch (e) {
-        console.error(e);
-        alert('Failed to summarize. Check console.');
+        console.error('Error during summarization:', e);
+        alert('Failed to summarize. Check console for details.');
       } finally {
         btn.disabled = false;
         btn.textContent = 'Summarize';
       }
     });
 
-    // Call the function to load the latest news
+    // Load news on page load
     loadLatestNews();
   </script>
 </body>
