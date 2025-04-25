@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
@@ -32,11 +32,12 @@ app.add_middleware(
 # Mount static files
 app.mount("/static", StaticFiles(directory="frontend_file/static"), name="static")
 
-# Include routers with proper prefixes
+# Include routers
 app.include_router(news.router, prefix="/api/news", tags=["news"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(summarization.router, prefix="/api/summarize", tags=["summarization"])
 
+# Environment debug route
 @app.get("/env-debug")
 def debug_env():
     return {
@@ -45,11 +46,17 @@ def debug_env():
         "SECRET_KEY": os.getenv("SECRET_KEY"),
     }
 
-
+# Root route for frontend
 @app.get("/")
 async def root():
     return FileResponse("frontend_file/index.html")
 
+# Health check route
 @app.get("/api/health")
 async def health_check():
-    return {"status": "healthy"} 
+    return {"status": "healthy"}
+
+# Head route fix for Render's health check
+@app.head("/")
+async def head_root():
+    return Response(status_code=200)
