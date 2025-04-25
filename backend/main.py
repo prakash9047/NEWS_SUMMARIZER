@@ -37,6 +37,15 @@ app.include_router(news.router, prefix="/api/news", tags=["news"])
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(summarization.router, prefix="/api/summarize", tags=["summarization"])
 
+@app.get("/env-debug")
+def debug_env():
+    return {
+        "NEWS_API_KEY": os.getenv("NEWS_API_KEY"),
+        "GROQ_API_KEY": os.getenv("GROQ_API_KEY"),
+        "SECRET_KEY": os.getenv("SECRET_KEY"),
+    }
+
+
 @app.get("/")
 async def root():
     return FileResponse("frontend_file/index.html")
